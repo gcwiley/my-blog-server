@@ -32,10 +32,10 @@ router.post('/', newPost);
 // GET /api/posts - get all posts
 router.get('/', getPosts);
 
-// PATCH /api/posts/:id - update post
+// PATCH /api/posts/:id - update post by ID
 router.patch('/:id', updatePostById);
 
-// DELETE /api/posts/:id - delete post
-router.delete(':/id', deletePostById);
+// DELETE /api/posts/:id - delete post by ID
+router.delete('/:id', deletePostById);
 
 export { router as postRouter };

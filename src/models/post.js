@@ -11,7 +11,7 @@ const Post = sequelize.define(
          defaultValue: DataTypes.UUIDV4,
          primaryKey: true,
       },
-      // title of post
+      // title
       title: {
          type: DataTypes.STRING,
          allowNull: false,
@@ -20,7 +20,7 @@ const Post = sequelize.define(
             len: [5, 255],
          },
       },
-      // author of post
+      // author
       author: {
          type: DataTypes.STRING,
          allowNull: false,
@@ -28,17 +28,17 @@ const Post = sequelize.define(
             notEmpty: true,
          },
       },
-      // body of post
+      // body
       body: {
-         type: DataTypes.STRING,
+         type: DataTypes.TEXT,
          allowNull: false,
          validate: {
             len: [0, 5000],
          },
       },
-      // category - for PostgreSQL only
+      // category 
       category: {
-         type: DataTypes.ARRAY(DataTypes.STRING), // array
+         type: DataTypes.STRING,
          allowNull: false,
          validate: { notEmpty: true },
       },
@@ -84,6 +84,7 @@ const Post = sequelize.define(
          },
          {
             fields: ['tags'],
+            using: 'GIN', // GIN index for array columns
          },
       ],
    }

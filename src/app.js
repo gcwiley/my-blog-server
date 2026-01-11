@@ -4,19 +4,13 @@ import chalk from 'chalk';
 import admin from 'firebase-admin';
 import express from 'express';
 import logger from 'morgan';
+import helmet from 'helmet';
+import cors from 'cors';
 
-// import database connection and helper
 import { sequelize, connectToDatabase } from './db/connect_to_sqldb.js';
-
-// import models ( ensure they are registered with sequelize)
-// import index.js to load models AND their associations
 import './models/index.js';
-
-// import the routers
 import { postRouter } from './routes/post.js';
-
-// import the credentials
-import {} from '../credentials/service-account.js';
+import { serviceAccount } from '../credentials/service-account.js';
 
 // --- CONFIGURATION ---
 const __filename = fileURLToPath(import.meta.url);
@@ -29,28 +23,33 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   storageBucket: `${serviceAccount.project_id}.appspot.com`,
 });
-
 const bucket = admin.storage().bucket();
 
 // --- EXPRESS SETUP
 const app = express();
 
-const post = process.env.PORT || 3000;
-
-// allow static files to angular client-side folder
-const clientDistPath = path.join(__dirname, './dist/my-blog-client/browser');
-app.use(express.static(clientDistPath));
-
+app.use(helmet({
+  contentSecurityPolicy: false,
+}));
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || 'http://localhost:4200',
+  credentials: true,
+}))
+app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(logger('dev'));
+app.use(express.static(angularDistPath));
+
+app.use((req, res, next) => {
+  req.bucket = bucket;
+  next();
+});
 
 // --- ROUTES ---
 app.use('/api/posts', postRouter);
 
-// --- STATIC FILES ---
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve(clientDistPath, 'index.html'));
+app.get('{*splat}', (req, res) => {
+  res.sendFile(path.join(angularDistPath, 'index.html'));
 });
 
 // global error handler - express requires 4 args for error handlers
@@ -71,14 +70,14 @@ const startServer = async () => {
     // 1. establish DB connection
     await connectToDatabase();
 
-    // 2. sync models (create tables if missing)
+    // 2. sync models (create tables if missing) - ONLY IN DEVELOPMENT
     // note: in production, use Migrations instead of sync()
     await sequelize.sync({ alter: true });
     console.log(chalk.green('Database models synced successfully.'));
 
     // 3. start listening
     const server = app.listen(port, () => {
-      console.log(chalk.blueBright(`\n Server running on port ${port}\n`));
+      console.log(chalk.blueBright(`\nServer running on port ${port}\n`));
     });
 
     // 4. graceful shutdown

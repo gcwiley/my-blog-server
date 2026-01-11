@@ -16,6 +16,9 @@ const username = process.env.DB_USER;
 const password = process.env.DB_PASSWORD;
 const host = process.env.DB_HOST;
 const port = process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : 5432;
+if (isNaN(port)) {
+  throw new Error('DB_PORT must be a valid number')
+}
 
 // checks for presence of required environment variables
 if (!database || !username || !password || !host) {
@@ -28,11 +31,9 @@ if (!database || !username || !password || !host) {
 const dialectOptions = isProduction ? {
   ssl: {
     require: true,
-    rejectUnauthorized: false, // often needed for self-signed cloud certs
+    rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED !== false,
   },
-} : {
-  ssl: false
-};
+} : {};
 
 // create the sequelize instance
 const sequelize = new Sequelize(database, username, password, {
@@ -54,11 +55,10 @@ const sequelize = new Sequelize(database, username, password, {
 const connectToDatabase = async () => {
   try {
     await sequelize.authenticate();
-    console.log(chalk.magentaBright('\n', `Connection to PostgreSQL database '${database}' established successfully.`, '\n'));
+    console.log(chalk.magentaBright(`\nConnection to PostgreSQL database '${database}' established successfully.\n`));
   } catch (error) {
-    console.error(chalk.red('\n', `Unable to connect to the database: ${error.message}`, '\n'));
-    // exit process on DB failure, as the app cannot function without it
-    process.exit(1);
+    console.error(chalk.red(`\nUnable to connect to the database: ${error.message}\n`));
+    throw error; // let caller decide how to handle
   }
 };
 
