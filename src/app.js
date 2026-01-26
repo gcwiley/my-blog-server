@@ -25,7 +25,7 @@ admin.initializeApp({
 });
 const bucket = admin.storage().bucket();
 
-// --- EXPRESS SETUP
+// --- EXPRESS SETUP ---
 const app = express();
 
 app.use(helmet({
