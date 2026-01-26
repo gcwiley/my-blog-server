@@ -1,19 +1,13 @@
 import { Post } from '../models/post.js';
 import { Op } from 'sequelize';
 
-// UUID validation helper
-const isValidUUID = (id) => {
-  const uuidRegex =
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-  return uuidRegex.test(id);
-};
+// validate ID function
+import { isValidUUID } from '../helpers/validate.js';
 
 // CREATE NEW POST
 export const newPost = async (req, res) => {
-  const { title, author, body, category, favorite, date } = req.body;
-
   try {
-    // builds a new model post instance and calls save on it
+    const { title, author, body, category, favorite, date } = req.body;
     const post = await Post.create({
       title,
       author,
@@ -121,13 +115,11 @@ export const getPostById = async (req, res) => {
         .json({ success: false, message: 'No post with that ID was found.' });
     }
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: 'Successfully fetched post.',
-        data: post,
-      });
+    res.status(200).json({
+      success: true,
+      message: 'Successfully fetched post.',
+      data: post,
+    });
   } catch (error) {
     console.error('Error fetching post:', error);
     res.status(500).json({
@@ -138,7 +130,7 @@ export const getPostById = async (req, res) => {
   }
 };
 
-// UPDATE POST BY ID
+// UPDATE POST BY ID - fix this!
 export const updatePostById = async (req, res) => {
   try {
     const post = await Post.findByPk(req.params.id);
@@ -256,12 +248,10 @@ export const searchPosts = async (req, res) => {
 
   // validate query parameters
   if (!query) {
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: 'Query parameter is required for searching posts.',
-      });
+    return res.status(400).json({
+      success: false,
+      message: 'Query parameter is required for searching posts.',
+    });
   }
 
   try {
@@ -278,12 +268,10 @@ export const searchPosts = async (req, res) => {
     });
 
     if (posts.length === 0) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message: 'No posts found matching your search query.',
-        });
+      return res.status(404).json({
+        success: false,
+        message: 'No posts found matching your search query.',
+      });
     }
 
     res

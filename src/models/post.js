@@ -15,10 +15,6 @@ const Post = sequelize.define(
       title: {
          type: DataTypes.STRING,
          allowNull: false,
-         validate: {
-            notEmpty: true,
-            len: [5, 255],
-         },
       },
       // author
       author: {
@@ -32,9 +28,6 @@ const Post = sequelize.define(
       body: {
          type: DataTypes.TEXT,
          allowNull: false,
-         validate: {
-            len: [0, 5000],
-         },
       },
       // category 
       category: {
@@ -46,19 +39,6 @@ const Post = sequelize.define(
       favorite: {
          type: DataTypes.BOOLEAN,
          defaultValue: false, // provide a default value of false
-      },
-      // tags
-      tags: {
-         type: DataTypes.ARRAY(DataTypes.STRING), // array
-         allowNull: true,
-      },
-      // excerpt
-      excerpt: {
-         type: DataTypes.STRING,
-         allowNull: true,
-         validate: {
-            len: [0, 255],
-         },
       },
       // date of post
       date: {
@@ -81,10 +61,6 @@ const Post = sequelize.define(
          },
          {
             fields: ['favorite'],
-         },
-         {
-            fields: ['tags'],
-            using: 'GIN', // GIN index for array columns
          },
       ],
    }

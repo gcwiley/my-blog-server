@@ -1,6 +1,18 @@
 {
+  // turns compact folders off in explorer
   "explorer.compactFolders": false,
+  // turns the minimap off
   "editor.minimap.enabled": false,
+  // set default dark theme
   "workbench.preferredDarkColorTheme": "Default Dark Modern",
-  "window.zoomLevel": 2
+  // set prettier as the default formatter for all languages
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  // enable format on save
+  "editor.formatOnSave": true,
+  // set the font size
+  "editor.fontSize": 16,
+  // set the window zoom level
+  "window.zoomLevel": 2,
+  // sets the theme to material icon theme
+  "workbench.iconTheme": "material-icon-theme"
 }
