@@ -6,6 +6,7 @@ import express from 'express';
 import logger from 'morgan';
 import helmet from 'helmet';
 import cors from 'cors';
+import rateLimit from 'express-rate-limit';
 
 import { sequelize, connectToDatabase } from './db/connect_to_sqldb.js';
 import './models/index.js';
@@ -44,6 +45,18 @@ app.use((req, res, next) => {
   req.bucket = bucket;
   next();
 });
+
+// --- API RATE LIMITING ---
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per window
+  standardHeaders: true, // return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // disable the `X-RateLimit-*` headers
+  message: 'Too many requests from this IP, please try again after 15 minutes.',
+});
+
+// apply the rate limiting middleware to API calls
+app.use('/api', apiLimiter);
 
 // --- ROUTES ---
 app.use('/api/posts', postRouter);
