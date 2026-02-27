@@ -130,7 +130,7 @@ export const getPostById = async (req, res) => {
   }
 };
 
-// UPDATE POST BY ID - fix this!
+// UPDATE POST BY ID
 export const updatePostById = async (req, res) => {
   try {
     const post = await Post.findByPk(req.params.id);

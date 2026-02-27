@@ -14,5 +14,7 @@
   // set the window zoom level
   "window.zoomLevel": 2,
   // sets the theme to material icon theme
-  "workbench.iconTheme": "material-icon-theme"
+  "workbench.iconTheme": "material-icon-theme",
+  // list of words considered correct
+  "cSpell.words": ["appspot", "sqldb"]
 }

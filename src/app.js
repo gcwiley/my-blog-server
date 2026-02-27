@@ -11,36 +11,54 @@ import rateLimit from 'express-rate-limit';
 import { sequelize, connectToDatabase } from './db/connect_to_sqldb.js';
 import './models/index.js';
 import { postRouter } from './routes/post.js';
+
+// load service account key file
 import { serviceAccount } from '../credentials/service-account.js';
 
 // --- CONFIGURATION ---
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const port = process.env.PORT || 3000;
+const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:4200';
 const angularDistPath = path.join(__dirname, './dist/my-blog-client/browser');
 
-// --- FIREBASE INIT ---
+// --- FIREBASE ADMIN SDK INIT ---
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  storageBucket: `${serviceAccount.project_id}.appspot.com`,
+  storageBucket: `${process.env.GCP_PROJECT_ID}.appspot.com`,
 });
 const bucket = admin.storage().bucket();
 
 // --- EXPRESS SETUP ---
 const app = express();
+app.set('trust proxy', 1);
 
-app.use(helmet({
-  contentSecurityPolicy: false,
-}));
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:4200',
-  credentials: true,
-}))
+// --- HELMET --- fix this!
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", 'data:', 'https://storage.googleapis.com'],
+      }
+    },
+  }),
+);
+
+app.use(
+  cors({
+    origin: CORS_ORIGIN,
+    credentials: true,
+  }),
+);
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(angularDistPath));
 
+// attach bucket to request
 app.use((req, res, next) => {
   req.bucket = bucket;
   next();
