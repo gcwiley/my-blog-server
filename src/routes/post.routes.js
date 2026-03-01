@@ -11,7 +11,7 @@ import {
    getRecentlyCreatedPosts,
    getPostCount,
    searchPosts,
-} from '../controllers/post.js';
+} from '../controllers/post.controller.js';
 
 // GET /api/posts/count - count all posts
 router.get('/count', getPostCount);

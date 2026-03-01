@@ -1,4 +1,4 @@
-import { Post } from '../models/post.js';
+import { Post } from '../models/post.model.js';
 import { Op } from 'sequelize';
 
 // validate ID function

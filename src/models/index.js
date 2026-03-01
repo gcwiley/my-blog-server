@@ -1,5 +1,9 @@
-import { Post } from './post.js';
+import { Post } from './post.model.js';
+import { User } from './user.model.js';
 
-// define relationships (not currently used)
+// --- ASSOCIATIONS ---
+// ready to define when needed e.g.:
+// User.hasMany(Post, { foreignKey: 'authorId' });
+// Post.belongsTo(User, { foreignKey: 'authorId' });
 
-export { Post };
+export { Post, User };

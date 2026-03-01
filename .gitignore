@@ -1,12 +1,6 @@
 # node dependencies
 /node_modules
 
-# Firebase Credentials
-/credentials
-
-# Firebase Credentials
-credentials.json
-
 # environmental variables file
 .env
 
